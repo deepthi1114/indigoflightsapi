@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<mule xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:apikit="http://www.mulesoft.org/schema/mule/mule-apikit" xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd http://www.mulesoft.org/schema/mule/mule-apikit http://www.mulesoft.org/schema/mule/mule-apikit/current/mule-apikit.xsd http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd ">
+<mule xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:apikit="http://www.mulesoft.org/schema/mule/mule-apikit" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd http://www.mulesoft.org/schema/mule/mule-apikit http://www.mulesoft.org/schema/mule/mule-apikit/current/mule-apikit.xsd http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd ">
     <apikit:config name="indigoflightsapi-config" api="indigoflightsapi.raml" outboundHeadersMapName="outboundHeaders" httpStatusVarName="httpStatus" />
-	<flow name="indigoflightsapi-main">
+    <flow name="indigoflightsapi-main">
         <http:listener path="/indigo/api/*" config-ref="indigo_HTTP_Listener_config">
             <http:response statusCode="#[vars.httpStatus default 200]">
                 <http:headers><![CDATA[#[vars.outboundHeaders default {}]]]></http:headers>
@@ -94,7 +94,17 @@ output application/json
         </error-handler>
     </flow>
     <flow name="get:\indigoFlights:indigoflightsapi-config">
-        <flow-ref doc:name="indigoFlightsFlow Reference" doc:id="ea43d6ce-3d3e-466b-ba33-eb84272d4808" name="indigoFlightsFlow"/>
-		<logger level="INFO" doc:name="Logger" doc:id="63cdd346-a7a9-4aef-832b-86a840cbff0b" message="response sent   -------------------#[payload]"/>
+        <flow-ref doc:name="indigoFlightsFlow Reference" doc:id="ea43d6ce-3d3e-466b-ba33-eb84272d4808" name="indigoFlightsFlow" />
+        <logger level="INFO" doc:name="Logger" doc:id="63cdd346-a7a9-4aef-832b-86a840cbff0b" message="response sent   -------------------#[payload]" />
+    </flow>
+    <flow name="get:\indigoFlights\(source)\(destination)\(doj):indigoflightsapi-config">
+        <ee:transform>
+            <ee:variables>
+                <ee:set-variable variableName="source">attributes.uriParams.'source'</ee:set-variable>
+                <ee:set-variable variableName="destination">attributes.uriParams.'destination'</ee:set-variable>
+                <ee:set-variable variableName="doj">attributes.uriParams.'doj'</ee:set-variable>
+            </ee:variables>
+        </ee:transform>
+		<flow-ref doc:name="indigoFlightsbyUriParamsFlowReference" doc:id="efcf5a77-3c6c-4f0b-bc23-9b84df7c3952" name="indigoFlightsbyUriParamsFlow"/>
     </flow>
 </mule>
